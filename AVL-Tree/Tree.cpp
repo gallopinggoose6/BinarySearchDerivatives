@@ -131,6 +131,7 @@ void AVL::addBalance(AVLNode *star) {
 			if (star->parent->parent->rightNode == star->parent) left = 1;
 		}
 		star->parent->rightNode = star->leftNode;
+		if (star->leftNode != nullptr) star->leftNode->parent = star->parent;
 		star->leftNode = star->parent;
 		star->parent = star->parent->parent;
 		star->leftNode->parent = star;
@@ -154,6 +155,7 @@ void AVL::addBalance(AVLNode *star) {
 			if (star->parent->parent->rightNode == star->parent) left = 1;
 		}
 		star->parent->leftNode = star->rightNode;
+		if (star->rightNode != nullptr) star->rightNode->parent = star->parent;
 		star->rightNode = star->parent;
 		star->parent = star->parent->parent;
 		star->rightNode->parent = star;
@@ -172,39 +174,36 @@ void AVL::addBalance(AVLNode *star) {
 	}
 }
 
-bool AVL::find(double d, AVLNode* current) {
+AVLNode* AVL::find(double d, AVLNode* current) {
 	if (current == nullptr) {
 		if (DEBUG_TRACE) std::cout << "find(d: " << d << " current: nullptr)\n";
-		return false;
+		return nullptr;
 	}
 	if (DEBUG_TRACE) std::cout << "find(d: " << d << " current: " << current->getData() << ")\n";
 	if (d == root->getData()) {
-		foundNode = &root;
-		return true;
+		return root;
 	}
 	else if (d > current->getData()) {
 		if (current->rightNode != nullptr) {
 			if (current->rightNode->getData() == d) {
-				foundNode = &current->rightNode;
-				return true;
+				return current->rightNode;
 			}
 			else {
 				return find(d, current->rightNode);
 			}
 		}
-		else return false;
+		else return nullptr;
 	}
 	else {
 		if (current->leftNode != nullptr) {
 			if (current->leftNode->getData() == d) {
-				foundNode = &current->leftNode;
-				return true;
+				return current->leftNode;
 			}
 			else {
 				return find(d, current->leftNode);
 			}
 		}
-		else return false;
+		else return nullptr;
 	}
 }
 
@@ -230,31 +229,38 @@ std::vector<double> AVL::inOrderTraversal() {
 void AVL::remove(double d) {
 	if (DEBUG_TRACE) std::cout << "remove(d: " << d << ")\n";
 	if (root != nullptr) {
-		if (find(d, root)) {
-			if (DEBUG_TRACE & (root->getData() != d)) std::cout << "foundNode: " << (*foundNode)->getData() << "\n";
-			if ((*foundNode)->getOccurrences() > 1) (*foundNode)->removeOccurence();
+		AVLNode* foundNode = find(d, root);
+		if (foundNode != nullptr) {
+			if (DEBUG_TRACE & (root->getData() != d)) std::cout << "foundNode: " << foundNode->getData() << "\n";
+			if (foundNode->getOccurrences() > 1) foundNode->removeOccurence();
 			else {
 				int leafs = 0;
-				if ((*foundNode)->leftNode != nullptr) ++leafs;
-				if ((*foundNode)->rightNode != nullptr) ++leafs;
+				if (foundNode->leftNode != nullptr) ++leafs;
+				if (foundNode->rightNode != nullptr) ++leafs;
 				if (DEBUG_TRACE) std::cout << "#leafs: " << leafs << "\n";
 				switch (leafs) {
 				case 0:
-					if(root->getData() != d) {
-						if ((*foundNode)->parent->leftNode != nullptr) {
-							if ((*foundNode)->parent->leftNode == *foundNode) (*foundNode)->parent->leftNode = nullptr;
-							else (*foundNode)->parent->rightNode = nullptr;
+					if (root->getData() != d) {
+						if (foundNode->parent->leftNode != nullptr) {
+							if (foundNode->parent->leftNode == foundNode) foundNode->parent->leftNode = nullptr;
+							else {
+								std::cout << "TEST1: " << foundNode->parent->getData() << "\n";
+								std::cout << "TEST2: " << foundNode->parent->rightNode->getData() << "\n";
+								foundNode->parent->rightNode = nullptr;
+							}
 						}
 						else {
-							(*foundNode)->parent->rightNode = nullptr;
+							foundNode->parent->rightNode = nullptr;
 						}
 					}
-					delete* foundNode;
-					*foundNode = nullptr;
+					else {
+						root = nullptr;
+					}
+					delete foundNode;
+					foundNode = nullptr;
 					break;
 				case 1:
 				{
-				AVLNode* onetemp = *foundNode;
 				if (root->getData() == d) {
 					if (root->leftNode != nullptr) {
 						root = root->leftNode;
@@ -265,46 +271,35 @@ void AVL::remove(double d) {
 						root->parent = nullptr;
 					}
 				}
-				else if ((*foundNode)->leftNode != nullptr) {
-					if ((*foundNode)->parent->leftNode->getData() == d) {
-						(*foundNode)->leftNode->parent = (*foundNode)->parent;
-						(*foundNode)->parent->leftNode = (*foundNode)->leftNode;
-					}
-					else {
-						(*foundNode)->leftNode->parent = (*foundNode)->parent;
-						(*foundNode)->parent->rightNode = (*foundNode)->leftNode;
-					}
+				else if (foundNode->leftNode != nullptr) {
+					foundNode->leftNode->parent = foundNode->parent;
+					if (foundNode->parent->leftNode->getData() == d) foundNode->parent->leftNode = foundNode->leftNode;
+					else foundNode->parent->rightNode = foundNode->leftNode;
 				}
 				else {
-					if ((*foundNode)->parent->leftNode->getData() == d) {
-						(*foundNode)->rightNode->parent = (*foundNode)->parent;
-						(*foundNode)->parent->leftNode = (*foundNode)->rightNode;
-					}
-					else {
-						(*foundNode)->rightNode->parent = (*foundNode)->parent;
-						(*foundNode)->parent->rightNode = (*foundNode)->rightNode;
-					}
+					foundNode->rightNode->parent = foundNode->parent;
+					if (foundNode->parent->leftNode->getData() == d) foundNode->parent->leftNode = foundNode->rightNode;
+					else foundNode->parent->rightNode = foundNode->rightNode;
 				}
-				std::cout << "onetemp data: " << onetemp->getData() << " foundNode data: " << (*foundNode)->getData() << "\n";
-				delete onetemp;
-				onetemp = nullptr;
+				delete foundNode;
+				foundNode = nullptr;
 				break;
 				}
 				case 2:
 					std::vector<double> traversal = inOrderTraversal();
-					AVLNode* foundNodeoriginal = *foundNode;
+					AVLNode* foundNodeoriginal = foundNode;
 					for (unsigned int index = 0; index < traversal.size(); ++index) {
 						if (traversal[index] == d) {
-							find(traversal[index + 1], root);
+							foundNode = find(traversal[index + 1], root);
 							break;
 						}
 					}
-					for (unsigned int i = 1; i < (*foundNode)->getOccurrences(); ++i) {
+					for (unsigned int i = 1; i < foundNode->getOccurrences(); ++i) {
 						foundNodeoriginal->addOccurrence();
-						(*foundNode)->removeOccurence();
+						foundNode->removeOccurence();
 					}
-					double temp = (*foundNode)->getData();
-					remove((*foundNode)->getData());
+					double temp = foundNode->getData();
+					remove(foundNode->getData());
 					foundNodeoriginal->setData(temp);
 					break;
 				}

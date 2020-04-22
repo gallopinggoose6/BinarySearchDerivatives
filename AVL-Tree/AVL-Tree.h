@@ -30,7 +30,6 @@ public:
 
 class AVL {
 private:
-	AVLNode** foundNode = nullptr;
 	std::vector<double> GUIpot;
 	std::vector<double> GUIiot;
 	std::vector<double> GUIpoot;
@@ -47,7 +46,7 @@ public:
 	AVL();
 	~AVL();
 	void add(double d, AVLNode* current);
-	bool find(double d, AVLNode* current);
+	AVLNode* find(double d, AVLNode* current);
 
 	//void traverseAndPrint
 
