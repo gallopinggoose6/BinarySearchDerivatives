@@ -27,8 +27,8 @@ int runCatchTests(int argc, char* const argv[]) {
     return Catch::Session().run(argc, argv);
 }
 
-void traverse(AVLNode* current) {
-	std::cout << "Data: " << current->getData() << ",\tBallance Factor: " << current->getBalfactor() << ",\tOccurrences: " << current->getOccurrences() << "\n";
+void traverse(Node* current) {
+	std::cout << "Data: " << current->getData() << ",\tBallance Factor: " << static_cast<AVLNode*>(current)->getBalfactor() << ",\tOccurrences: " << current->getOccurrences() << "\n";
 	if (current->rightNode != nullptr) traverse(current->rightNode);
 	if (current->leftNode != nullptr) traverse(current->leftNode);
 }
@@ -218,137 +218,315 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return (INT_PTR)FALSE;
 }
 
-TEST_CASE("Tree Creation and Deletion") {
+TEST_CASE("Tree Tree Creation and Deletion") {
+    Tree* myTree = new Tree();
+    REQUIRE(myTree->root == nullptr);
+    delete myTree;
+}
+
+TEST_CASE("Tree Node Addition") {
+    Tree* myTree = new Tree();
+
+    myTree->add(10);
+    REQUIRE(myTree->root != nullptr);
+    REQUIRE(myTree->root->getData() == 10);
+    REQUIRE(myTree->root->getOccurrences() == 1);
+    REQUIRE(myTree->root->leftNode == nullptr);
+    REQUIRE(myTree->root->rightNode == nullptr);
+
+    myTree->add(14);
+    REQUIRE(myTree->root->rightNode != nullptr);
+    REQUIRE(myTree->root->rightNode->getData() == 14);
+    REQUIRE(myTree->root->rightNode->getOccurrences() == 1);
+    REQUIRE(myTree->root->leftNode == nullptr);
+
+    myTree->add(14);
+    REQUIRE(myTree->root->rightNode->getOccurrences() == 2);
+    REQUIRE(myTree->root->rightNode->rightNode == nullptr);
+    REQUIRE(myTree->root->rightNode->leftNode == nullptr);
+    REQUIRE(myTree->root->leftNode == nullptr);
+
+    myTree->add(5);
+    REQUIRE(myTree->root->leftNode != nullptr);
+    REQUIRE(myTree->root->leftNode->getData() == 5);
+    REQUIRE(myTree->root->leftNode->getOccurrences() == 1);
+    REQUIRE(myTree->root->leftNode->leftNode == nullptr);
+    REQUIRE(myTree->root->leftNode->rightNode == nullptr);
+    REQUIRE(myTree->root->rightNode->rightNode == nullptr);
+    REQUIRE(myTree->root->rightNode->leftNode == nullptr);
+
+    myTree->add(20);
+    REQUIRE(myTree->root->rightNode != nullptr);
+    REQUIRE(myTree->root->rightNode->rightNode != nullptr);
+    REQUIRE(myTree->root->rightNode->rightNode->getOccurrences() == 1);
+    REQUIRE(myTree->root->rightNode->rightNode->getData() == 20);
+    REQUIRE(myTree->root->rightNode->leftNode == nullptr);
+    REQUIRE(myTree->root->leftNode->rightNode == nullptr);
+    REQUIRE(myTree->root->leftNode->leftNode == nullptr);
+
+    myTree->add(13);
+    REQUIRE(myTree->root->rightNode->leftNode != nullptr);
+    REQUIRE(myTree->root->rightNode->leftNode->getOccurrences() == 1);
+    REQUIRE(myTree->root->rightNode->leftNode->getData() == 13);
+    REQUIRE(myTree->root->rightNode->leftNode->rightNode == nullptr);
+    REQUIRE(myTree->root->rightNode->leftNode->leftNode == nullptr);
+    REQUIRE(myTree->root->rightNode->rightNode != nullptr);
+    REQUIRE(myTree->root->rightNode->rightNode->getData() == 20);
+    REQUIRE(myTree->root->rightNode->rightNode->rightNode == nullptr);
+    REQUIRE(myTree->root->rightNode->rightNode->leftNode == nullptr);
+    REQUIRE(myTree->root->leftNode != nullptr);
+    REQUIRE(myTree->root->leftNode->getData() == 5);
+    REQUIRE(myTree->root->leftNode->leftNode == nullptr);
+    REQUIRE(myTree->root->leftNode->rightNode == nullptr);
+
+    myTree->add(1.5);
+    REQUIRE(myTree->root->leftNode != nullptr);
+    REQUIRE(myTree->root->leftNode->getData() == 5);
+    REQUIRE(myTree->root->leftNode->getOccurrences() == 1);
+    REQUIRE(myTree->root->leftNode->leftNode != nullptr);
+    REQUIRE(myTree->root->leftNode->rightNode == nullptr);
+    REQUIRE(myTree->root->leftNode->leftNode->getData() == 1.5);
+    REQUIRE(myTree->root->leftNode->leftNode->getOccurrences() == 1);
+    REQUIRE(myTree->root->leftNode->leftNode->leftNode == nullptr);
+    REQUIRE(myTree->root->leftNode->leftNode->rightNode == nullptr);
+    REQUIRE(myTree->root->rightNode != nullptr);
+    REQUIRE(myTree->root->rightNode->getData() == 14);
+    REQUIRE(myTree->root->rightNode->leftNode != nullptr);
+    REQUIRE(myTree->root->rightNode->leftNode->getData() == 13);
+    REQUIRE(myTree->root->rightNode->rightNode != nullptr);
+    REQUIRE(myTree->root->rightNode->rightNode->getData() == 20);
+    REQUIRE(myTree->root->rightNode->leftNode->leftNode == nullptr);
+    REQUIRE(myTree->root->rightNode->leftNode->rightNode == nullptr);
+    REQUIRE(myTree->root->rightNode->rightNode->leftNode == nullptr);
+    REQUIRE(myTree->root->rightNode->rightNode->rightNode == nullptr);
+
+    myTree->add(8);
+    REQUIRE(myTree->root->leftNode != nullptr);
+    REQUIRE(myTree->root->leftNode->getData() == 5);
+    REQUIRE(myTree->root->leftNode->getOccurrences() == 1);
+    REQUIRE(myTree->root->leftNode->rightNode != nullptr);
+    REQUIRE(myTree->root->leftNode->leftNode != nullptr);
+    REQUIRE(myTree->root->leftNode->rightNode->getData() == 8);
+    REQUIRE(myTree->root->leftNode->rightNode->getOccurrences() == 1);
+    REQUIRE(myTree->root->leftNode->rightNode->leftNode == nullptr);
+    REQUIRE(myTree->root->leftNode->rightNode->rightNode == nullptr);
+
+    std::vector<double> array = { 10, 5, 1.5, 8, 14, 13, 20 };
+
+    REQUIRE(myTree->preOrderTraversal() == array);
+
+    myTree->add(8);
+    REQUIRE(myTree->root->leftNode->rightNode->getOccurrences() == 2);
+    REQUIRE(myTree->preOrderTraversal() == array);
+    delete myTree;
+}
+
+TEST_CASE("Tree Removing Nodes") {
+    Tree* myTree = new Tree();
+    myTree->add(10);
+    myTree->add(5);
+    myTree->add(1.5);
+    myTree->add(8);
+    myTree->add(14);
+    myTree->add(13);
+    myTree->add(20);
+    std::vector<double> array = { 10, 5, 1.5, 8, 14, 13, 20 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+
+    //Nonexistant Nodes
+    myTree->remove(19);
+    REQUIRE(myTree->preOrderTraversal() == array);
+
+    //zero leafs
+    myTree->remove(1.5);
+    array = { 10, 5, 8, 14, 13, 20 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+
+    //2 leafs
+    myTree->remove(14);
+    array = { 10, 5, 8, 20, 13 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+
+    //1 leaf
+
+    myTree->remove(5);
+    array = { 10, 8, 20, 13 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+
+    myTree->remove(20);
+    array = { 10, 8, 13 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+
+    myTree->remove(10);
+    array = { 13, 8 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+
+    myTree->remove(8);
+    array = { 13 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+
+    myTree->remove(13);
+    REQUIRE(myTree->root == nullptr);
+
+    delete myTree;
+}
+
+TEST_CASE("Tree Finding Nodes") {
+    Tree* myTree = new Tree();
+    REQUIRE(myTree->find(0, myTree->root) == nullptr);
+    REQUIRE(myTree->find(1, myTree->root) == nullptr);
+    REQUIRE(myTree->find(42, myTree->root) == nullptr);
+    REQUIRE(myTree->find(-20, myTree->root) == nullptr);
+    myTree->add(64);
+    REQUIRE(myTree->find(64, myTree->root) != nullptr);
+    REQUIRE(myTree->find(30, myTree->root) == nullptr);
+    REQUIRE(myTree->find(102, myTree->root) == nullptr);
+    myTree->add(42);
+    myTree->add(10);
+    myTree->add(200);
+    REQUIRE(myTree->find(42, myTree->root) != nullptr);
+    REQUIRE(myTree->find(10, myTree->root) != nullptr);
+    REQUIRE(myTree->find(200, myTree->root) != nullptr);
+    REQUIRE(myTree->find(0, myTree->root) == nullptr);
+    REQUIRE(myTree->find(30, myTree->root) == nullptr);
+    REQUIRE(myTree->find(50, myTree->root) == nullptr);
+    REQUIRE(myTree->find(70, myTree->root) == nullptr);
+    REQUIRE(myTree->find(300, myTree->root) == nullptr);
+    delete myTree;
+}
+
+////////////////////////////// AVL \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+TEST_CASE("AVL Tree Creation and Deletion") {
     AVL* myTree = new AVL();
     REQUIRE(myTree->root == nullptr);
     delete myTree;
 }
 
-TEST_CASE("Node Addition") {
+TEST_CASE("AVL Node Addition") {
     AVL* myTree = new AVL();
-    AVLNode** root = &myTree->root;
 
-    myTree->add(10, *root);
-    REQUIRE(*root != nullptr);
-    REQUIRE((*root)->getBalfactor() == 0);
-    REQUIRE((*root)->getData() == 10);
-    REQUIRE((*root)->getOccurrences() == 1);
-    REQUIRE((*root)->leftNode == nullptr);
-    REQUIRE((*root)->rightNode == nullptr);
+    myTree->add(10);
+    REQUIRE(static_cast<AVLNode*>(myTree->root) != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->getBalfactor() == 0);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->getData() == 10);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->getOccurrences() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode == nullptr);
 
-    myTree->add(14, *root);
-    REQUIRE((*root)->getBalfactor() == 1);
-    REQUIRE((*root)->rightNode != nullptr);
-    REQUIRE((*root)->rightNode->getBalfactor() == 0);
-    REQUIRE((*root)->rightNode->getData() == 14);
-    REQUIRE((*root)->rightNode->getOccurrences() == 1);
-    REQUIRE((*root)->leftNode == nullptr);
+    myTree->add(14);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->getBalfactor() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root->rightNode)->getBalfactor() == 0);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->getData() == 14);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->getOccurrences() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode == nullptr);
 
-    myTree->add(14, *root);
-    REQUIRE((*root)->getBalfactor() == 1);
-    REQUIRE((*root)->rightNode->getOccurrences() == 2);
-    REQUIRE((*root)->rightNode->rightNode == nullptr);
-    REQUIRE((*root)->rightNode->leftNode == nullptr);
-    REQUIRE((*root)->leftNode == nullptr);
+    myTree->add(14);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->getBalfactor() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->getOccurrences() == 2);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->rightNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->leftNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode == nullptr);
     
-    myTree->add(5, *root);
-    REQUIRE((*root)->getBalfactor() == 0);
-    REQUIRE((*root)->leftNode != nullptr);
-    REQUIRE((*root)->leftNode->getBalfactor() == 0);
-    REQUIRE((*root)->leftNode->getData() == 5);
-    REQUIRE((*root)->leftNode->getOccurrences() == 1);
-    REQUIRE((*root)->leftNode->leftNode == nullptr);
-    REQUIRE((*root)->leftNode->rightNode == nullptr);
-    REQUIRE((*root)->rightNode->rightNode == nullptr);
-    REQUIRE((*root)->rightNode->leftNode == nullptr);
+    myTree->add(5);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->getBalfactor() == 0);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root->leftNode)->getBalfactor() == 0);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->getData() == 5);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->getOccurrences() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->leftNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->rightNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->rightNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->leftNode == nullptr);
     
-    myTree->add(20, *root);
-    REQUIRE((*root)->getBalfactor() == 1);
-    REQUIRE((*root)->rightNode != nullptr);
-    REQUIRE((*root)->rightNode->getBalfactor() == 1);
-    REQUIRE((*root)->rightNode->rightNode != nullptr);
-    REQUIRE((*root)->rightNode->rightNode->getOccurrences() == 1);
-    REQUIRE((*root)->rightNode->rightNode->getData() == 20);
-    REQUIRE((*root)->rightNode->rightNode->getBalfactor() == 0);
-    REQUIRE((*root)->rightNode->leftNode == nullptr);
-    REQUIRE((*root)->leftNode->rightNode == nullptr);
-    REQUIRE((*root)->leftNode->leftNode == nullptr);
+    myTree->add(20);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->getBalfactor() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root->rightNode)->getBalfactor() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->rightNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->rightNode->getOccurrences() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->rightNode->getData() == 20);
+    REQUIRE(static_cast<AVLNode*>(myTree->root->rightNode->rightNode)->getBalfactor() == 0);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->leftNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->rightNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->leftNode == nullptr);
     
-    myTree->add(13, *root);
-    REQUIRE((*root)->getBalfactor() == 1);
-    REQUIRE((*root)->rightNode->getBalfactor() == 0);
-    REQUIRE((*root)->rightNode->leftNode != nullptr);
-    REQUIRE((*root)->rightNode->leftNode->getOccurrences() == 1);
-    REQUIRE((*root)->rightNode->leftNode->getData() == 13);
-    REQUIRE((*root)->rightNode->leftNode->getBalfactor() == 0);
-    REQUIRE((*root)->rightNode->leftNode->rightNode == nullptr);
-    REQUIRE((*root)->rightNode->leftNode->leftNode == nullptr);
-    REQUIRE((*root)->rightNode->rightNode != nullptr);
-    REQUIRE((*root)->rightNode->rightNode->getData() == 20);
-    REQUIRE((*root)->rightNode->rightNode->rightNode == nullptr);
-    REQUIRE((*root)->rightNode->rightNode->leftNode == nullptr);
-    REQUIRE((*root)->leftNode != nullptr);
-    REQUIRE((*root)->leftNode->getData() == 5);
-    REQUIRE((*root)->leftNode->leftNode == nullptr);
-    REQUIRE((*root)->leftNode->rightNode == nullptr);
+    myTree->add(13);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->getBalfactor() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root->rightNode)->getBalfactor() == 0);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->leftNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->leftNode->getOccurrences() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->leftNode->getData() == 13);
+    REQUIRE(static_cast<AVLNode*>(myTree->root->rightNode->leftNode)->getBalfactor() == 0);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->leftNode->rightNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->leftNode->leftNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->rightNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->rightNode->getData() == 20);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->rightNode->rightNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->rightNode->leftNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->getData() == 5);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->leftNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->rightNode == nullptr);
 
-    myTree->add(1.5, *root);
-    REQUIRE((*root)->getBalfactor() == 0);
-    REQUIRE((*root)->leftNode != nullptr);
-    REQUIRE((*root)->leftNode->getData() == 5);
-    REQUIRE((*root)->leftNode->getOccurrences() == 1);
-    REQUIRE((*root)->leftNode->getBalfactor() == -1);
-    REQUIRE((*root)->leftNode->leftNode != nullptr);
-    REQUIRE((*root)->leftNode->rightNode == nullptr);
-    REQUIRE((*root)->leftNode->leftNode->getData() == 1.5);
-    REQUIRE((*root)->leftNode->leftNode->getOccurrences() == 1);
-    REQUIRE((*root)->leftNode->leftNode->getBalfactor() == 0);
-    REQUIRE((*root)->leftNode->leftNode->leftNode == nullptr);
-    REQUIRE((*root)->leftNode->leftNode->rightNode == nullptr);
-    REQUIRE((*root)->rightNode != nullptr);
-    REQUIRE((*root)->rightNode->getData() == 14);
-    REQUIRE((*root)->rightNode->leftNode != nullptr);
-    REQUIRE((*root)->rightNode->leftNode->getData() == 13);
-    REQUIRE((*root)->rightNode->rightNode != nullptr);
-    REQUIRE((*root)->rightNode->rightNode->getData() == 20);
-    REQUIRE((*root)->rightNode->leftNode->leftNode == nullptr);
-    REQUIRE((*root)->rightNode->leftNode->rightNode == nullptr);
-    REQUIRE((*root)->rightNode->rightNode->leftNode == nullptr);
-    REQUIRE((*root)->rightNode->rightNode->rightNode == nullptr);
+    myTree->add(1.5);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->getBalfactor() == 0);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->getData() == 5);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->getOccurrences() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root->leftNode)->getBalfactor() == -1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->leftNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->rightNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->leftNode->getData() == 1.5);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->leftNode->getOccurrences() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root->leftNode->leftNode)->getBalfactor() == 0);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->leftNode->leftNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->leftNode->rightNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->getData() == 14);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->leftNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->leftNode->getData() == 13);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->rightNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->rightNode->getData() == 20);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->leftNode->leftNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->leftNode->rightNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->rightNode->leftNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->rightNode->rightNode->rightNode == nullptr);
 
-    myTree->add(8, *root);
-    REQUIRE((*root)->getBalfactor() == 0);
-    REQUIRE((*root)->leftNode != nullptr);
-    REQUIRE((*root)->leftNode->getData() == 5);
-    REQUIRE((*root)->leftNode->getOccurrences() == 1);
-    REQUIRE((*root)->leftNode->getBalfactor() == 0);
-    REQUIRE((*root)->leftNode->rightNode != nullptr);
-    REQUIRE((*root)->leftNode->leftNode != nullptr);
-    REQUIRE((*root)->leftNode->rightNode->getData() == 8);
-    REQUIRE((*root)->leftNode->rightNode->getBalfactor() == 0);
-    REQUIRE((*root)->leftNode->rightNode->getOccurrences() == 1);
-    REQUIRE((*root)->leftNode->rightNode->leftNode == nullptr);
-    REQUIRE((*root)->leftNode->rightNode->rightNode == nullptr);
+    myTree->add(8);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->getBalfactor() == 0);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->getData() == 5);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->getOccurrences() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root->leftNode)->getBalfactor() == 0);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->rightNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->leftNode != nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->rightNode->getData() == 8);
+    REQUIRE(static_cast<AVLNode*>(myTree->root->leftNode->rightNode)->getBalfactor() == 0);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->rightNode->getOccurrences() == 1);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->rightNode->leftNode == nullptr);
+    REQUIRE(static_cast<AVLNode*>(myTree->root)->leftNode->rightNode->rightNode == nullptr);
     
     std::vector<double> array = {10, 5, 1.5, 8, 14, 13, 20};
 
     REQUIRE(myTree->preOrderTraversal() == array);
     
-    myTree->add(8, *root);
-    REQUIRE((*root)->leftNode->rightNode->getOccurrences() == 2);
+    myTree->add(8);
+    REQUIRE((static_cast<AVLNode*>(myTree->root))->leftNode->rightNode->getOccurrences() == 2);
     REQUIRE(myTree->preOrderTraversal() == array);
     delete myTree;
 }
 
-TEST_CASE("Removing Nodes") {
+TEST_CASE("AVL Removing Nodes") {
     AVL* myTree = new AVL();
-    myTree->add(10, myTree->root);
-    myTree->add(5, myTree->root);
-    myTree->add(1.5, myTree->root);
-    myTree->add(8, myTree->root);
-    myTree->add(14, myTree->root);
-    myTree->add(13, myTree->root);
-    myTree->add(20, myTree->root);
+    myTree->add(10);
+    myTree->add(5);
+    myTree->add(1.5);
+    myTree->add(8);
+    myTree->add(14);
+    myTree->add(13);
+    myTree->add(20);
     std::vector<double> array = { 10, 5, 1.5, 8, 14, 13, 20 };
     REQUIRE(myTree->preOrderTraversal() == array);
     
@@ -390,19 +568,19 @@ TEST_CASE("Removing Nodes") {
     delete myTree;
 }
 
-TEST_CASE("Finding Nodes") {
+TEST_CASE("AVL Finding Nodes") {
     AVL* myTree = new AVL();
     REQUIRE(myTree->find(0, myTree->root) == nullptr);
     REQUIRE(myTree->find(1, myTree->root) == nullptr);
     REQUIRE(myTree->find(42, myTree->root) == nullptr);
     REQUIRE(myTree->find(-20, myTree->root) == nullptr);
-    myTree->add(64, myTree->root);
+    myTree->add(64);
     REQUIRE(myTree->find(64, myTree->root) != nullptr);
     REQUIRE(myTree->find(30, myTree->root) == nullptr);
     REQUIRE(myTree->find(102, myTree->root) == nullptr);
-    myTree->add(42, myTree->root);
-    myTree->add(10, myTree->root);
-    myTree->add(200, myTree->root);
+    myTree->add(42);
+    myTree->add(10);
+    myTree->add(200);
     REQUIRE(myTree->find(42, myTree->root) != nullptr);
     REQUIRE(myTree->find(10, myTree->root) != nullptr);
     REQUIRE(myTree->find(200, myTree->root) != nullptr);
@@ -416,56 +594,56 @@ TEST_CASE("Finding Nodes") {
 
 TEST_CASE("Left Rotation & Right Rotation w/ Children") {
     AVL* myTree = new AVL();
-    myTree->add(130, myTree->root);
+    myTree->add(130);
     std::vector<double> array = { 130 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
-    myTree->add(140, myTree->root);
+    myTree->add(140);
     array = { 130, 140, };
     REQUIRE(myTree->preOrderTraversal() == array);
 
-    myTree->add(150, myTree->root);
+    myTree->add(150);
     array = { 140, 130, 150 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
-    myTree->add(135, myTree->root);
+    myTree->add(135);
     array = { 140, 130, 135, 150 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
-    myTree->add(137, myTree->root);
+    myTree->add(137);
     array = { 140, 135, 130, 137, 150 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
     //actually a right rotation, but this is a convenient place to test it.
-    myTree->add(120, myTree->root);
+    myTree->add(120);
     array = { 135, 130, 120, 140, 137, 150 };
     REQUIRE(myTree->preOrderTraversal() == array);
 }
 
 TEST_CASE("Right Rotation & Left Rotation w/ Children") {
     AVL* myTree = new AVL();
-    myTree->add(130, myTree->root);
+    myTree->add(130);
     std::vector<double> array = { 130 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
-    myTree->add(120, myTree->root);
+    myTree->add(120);
     array = { 130, 120 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
-    myTree->add(110, myTree->root);
+    myTree->add(110);
     array = { 120, 110, 130 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
-    myTree->add(125, myTree->root);
+    myTree->add(125);
     array = { 120, 110, 130, 125 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
-    myTree->add(127, myTree->root);
+    myTree->add(127);
     array = { 120, 110, 127, 125, 130 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
     //actually left rotation (w/ children)
-    myTree->add(140, myTree->root);
+    myTree->add(140);
     array = { 127, 120, 110, 125, 130, 140 };
     REQUIRE(myTree->preOrderTraversal() == array);
     
@@ -475,15 +653,15 @@ TEST_CASE("Right Rotation & Left Rotation w/ Children") {
 TEST_CASE("Right Left Rotation") {
     AVL* myTree = new AVL();
 
-    myTree->add(13, myTree->root);
+    myTree->add(13);
     std::vector<double> array = { 13 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
-    myTree->add(27, myTree->root);
+    myTree->add(27);
     array = { 13, 27 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
-    myTree->add(16, myTree->root);
+    myTree->add(16);
     array = { 16, 13, 27 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
@@ -493,15 +671,15 @@ TEST_CASE("Right Left Rotation") {
 TEST_CASE("Left Right Rotation") {
     AVL* myTree = new AVL();
 
-    myTree->add(213, myTree->root);
+    myTree->add(213);
     std::vector<double> array = { 213 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
-    myTree->add(28, myTree->root);
+    myTree->add(28);
     array = { 213, 28 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
-    myTree->add(29, myTree->root);
+    myTree->add(29);
     array = { 29, 28, 213 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
