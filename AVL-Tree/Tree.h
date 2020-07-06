@@ -28,6 +28,7 @@ private:
 	void postOrderTraversaler(Node* currentNode);
 	//levelOrderTraversaler
 	virtual void adder(double d, Node* current);
+	Node* finder(double d, Node* current);
 
 public:
 	Node* root = nullptr;
@@ -36,7 +37,9 @@ public:
 	void add(double d) {
 		adder(d, root);
 	};
-	Node* find(double d, Node* current);
+	Node* find(double d) {
+		return finder(d, root);
+	}
 
 	//void traverseAndPrint
 

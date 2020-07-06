@@ -318,6 +318,18 @@ TEST_CASE("Tree Node Addition") {
     myTree->add(8);
     REQUIRE(myTree->root->leftNode->rightNode->getOccurrences() == 2);
     REQUIRE(myTree->preOrderTraversal() == array);
+
+    myTree->add(21);
+    myTree->add(22);
+
+    REQUIRE(myTree->root->rightNode->rightNode->rightNode->getData() == 21);
+    REQUIRE(myTree->root->rightNode->rightNode->rightNode->rightNode->getData() == 22);
+    REQUIRE(myTree->root->rightNode->rightNode->rightNode->leftNode == nullptr);
+    REQUIRE(myTree->root->rightNode->rightNode->rightNode->rightNode->rightNode == nullptr);
+    REQUIRE(myTree->root->rightNode->rightNode->rightNode->rightNode->leftNode == nullptr);
+    REQUIRE(myTree->root->rightNode->rightNode->getOccurrences() == 1);
+    REQUIRE(myTree->root->rightNode->rightNode->rightNode->getOccurrences() == 1);
+
     delete myTree;
 }
 
@@ -373,25 +385,25 @@ TEST_CASE("Tree Removing Nodes") {
 
 TEST_CASE("Tree Finding Nodes") {
     Tree* myTree = new Tree();
-    REQUIRE(myTree->find(0, myTree->root) == nullptr);
-    REQUIRE(myTree->find(1, myTree->root) == nullptr);
-    REQUIRE(myTree->find(42, myTree->root) == nullptr);
-    REQUIRE(myTree->find(-20, myTree->root) == nullptr);
+    REQUIRE(myTree->find(0) == nullptr);
+    REQUIRE(myTree->find(1) == nullptr);
+    REQUIRE(myTree->find(42) == nullptr);
+    REQUIRE(myTree->find(-20) == nullptr);
     myTree->add(64);
-    REQUIRE(myTree->find(64, myTree->root) != nullptr);
-    REQUIRE(myTree->find(30, myTree->root) == nullptr);
-    REQUIRE(myTree->find(102, myTree->root) == nullptr);
+    REQUIRE(myTree->find(64) != nullptr);
+    REQUIRE(myTree->find(30) == nullptr);
+    REQUIRE(myTree->find(102) == nullptr);
     myTree->add(42);
     myTree->add(10);
     myTree->add(200);
-    REQUIRE(myTree->find(42, myTree->root) != nullptr);
-    REQUIRE(myTree->find(10, myTree->root) != nullptr);
-    REQUIRE(myTree->find(200, myTree->root) != nullptr);
-    REQUIRE(myTree->find(0, myTree->root) == nullptr);
-    REQUIRE(myTree->find(30, myTree->root) == nullptr);
-    REQUIRE(myTree->find(50, myTree->root) == nullptr);
-    REQUIRE(myTree->find(70, myTree->root) == nullptr);
-    REQUIRE(myTree->find(300, myTree->root) == nullptr);
+    REQUIRE(myTree->find(42) != nullptr);
+    REQUIRE(myTree->find(10) != nullptr);
+    REQUIRE(myTree->find(200) != nullptr);
+    REQUIRE(myTree->find(0) == nullptr);
+    REQUIRE(myTree->find(30) == nullptr);
+    REQUIRE(myTree->find(50) == nullptr);
+    REQUIRE(myTree->find(70) == nullptr);
+    REQUIRE(myTree->find(300) == nullptr);
     delete myTree;
 }
 
@@ -570,25 +582,25 @@ TEST_CASE("AVL Removing Nodes") {
 
 TEST_CASE("AVL Finding Nodes") {
     AVL* myTree = new AVL();
-    REQUIRE(myTree->find(0, myTree->root) == nullptr);
-    REQUIRE(myTree->find(1, myTree->root) == nullptr);
-    REQUIRE(myTree->find(42, myTree->root) == nullptr);
-    REQUIRE(myTree->find(-20, myTree->root) == nullptr);
+    REQUIRE(myTree->find(0) == nullptr);
+    REQUIRE(myTree->find(1) == nullptr);
+    REQUIRE(myTree->find(42) == nullptr);
+    REQUIRE(myTree->find(-20) == nullptr);
     myTree->add(64);
-    REQUIRE(myTree->find(64, myTree->root) != nullptr);
-    REQUIRE(myTree->find(30, myTree->root) == nullptr);
-    REQUIRE(myTree->find(102, myTree->root) == nullptr);
+    REQUIRE(myTree->find(64) != nullptr);
+    REQUIRE(myTree->find(30) == nullptr);
+    REQUIRE(myTree->find(102) == nullptr);
     myTree->add(42);
     myTree->add(10);
     myTree->add(200);
-    REQUIRE(myTree->find(42, myTree->root) != nullptr);
-    REQUIRE(myTree->find(10, myTree->root) != nullptr);
-    REQUIRE(myTree->find(200, myTree->root) != nullptr);
-    REQUIRE(myTree->find(0, myTree->root) == nullptr);
-    REQUIRE(myTree->find(30, myTree->root) == nullptr);
-    REQUIRE(myTree->find(50, myTree->root) == nullptr);
-    REQUIRE(myTree->find(70, myTree->root) == nullptr);
-    REQUIRE(myTree->find(300, myTree->root) == nullptr);
+    REQUIRE(myTree->find(42) != nullptr);
+    REQUIRE(myTree->find(10) != nullptr);
+    REQUIRE(myTree->find(200) != nullptr);
+    REQUIRE(myTree->find(0) == nullptr);
+    REQUIRE(myTree->find(30) == nullptr);
+    REQUIRE(myTree->find(50) == nullptr);
+    REQUIRE(myTree->find(70) == nullptr);
+    REQUIRE(myTree->find(300) == nullptr);
     delete myTree;
 }
 

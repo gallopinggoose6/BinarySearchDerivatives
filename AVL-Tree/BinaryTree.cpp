@@ -59,7 +59,7 @@ Tree::~Tree() {
 	while (root != nullptr) remove(root->getData());	//very inefficient. Replace later
 }
 
-Node* Tree::find(double d, Node* current) {
+Node* Tree::finder(double d, Node* current) {
 	if (current == nullptr) return nullptr;
 	if (d == root->getData()) {
 		return root;
@@ -70,7 +70,7 @@ Node* Tree::find(double d, Node* current) {
 				return current->rightNode;
 			}
 			else {
-				return find(d, current->rightNode);
+				return finder(d, current->rightNode);
 			}
 		}
 		else return nullptr;
@@ -81,7 +81,7 @@ Node* Tree::find(double d, Node* current) {
 				return current->leftNode;
 			}
 			else {
-				return find(d, current->leftNode);
+				return finder(d, current->leftNode);
 			}
 		}
 		else return nullptr;
@@ -108,7 +108,7 @@ std::vector<double> Tree::postOrderTraversal() {
 
 void Tree::remove(double d) {
 	if (root != nullptr) {
-		Node* foundNode = find(d, root);
+		Node* foundNode = find(d);
 		if (foundNode != nullptr) {
 			if (foundNode->getOccurrences() > 1) foundNode->removeOccurence();
 			else {
@@ -165,7 +165,7 @@ void Tree::remove(double d) {
 					Node* foundNodeoriginal = foundNode;
 					for (unsigned int index = 0; index < traversal.size(); ++index) {
 						if (traversal[index] == d) {
-							foundNode = find(traversal[index + 1], root);
+							foundNode = find(traversal[index + 1]);
 							break;
 						}
 					}
