@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <catch2/catch.hpp>
 #include <stdlib.h>
+#include "RedBlack.h"
 
 #define MAX_LOADSTRING 100
 
@@ -695,5 +696,258 @@ TEST_CASE("Left Right Rotation") {
     array = { 29, 28, 213 };
     REQUIRE(myTree->preOrderTraversal() == array);
 
+    delete myTree;
+}
+
+TEST_CASE("Red Black Tree Creation") {
+    RedBlack* myTree = new RedBlack();
+    REQUIRE(myTree->root == nullptr);
+    delete myTree;
+}
+
+TEST_CASE("Red Black Root Creation") {
+    RedBlack* myTree = new RedBlack();
+    myTree->add(10);
+    REQUIRE(myTree->root);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->isNull());
+    REQUIRE(myTree->root->getData() == 10.0);
+    REQUIRE(myTree->root->getOccurrences() == 1);
+    REQUIRE(myTree->root->parent);
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->parent)->isNull());
+    REQUIRE(myTree->root->leftNode);
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->isNull());
+    REQUIRE(myTree->root->rightNode);
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->isNull());
+    REQUIRE(!myTree->root->parent->parent);
+    REQUIRE(!myTree->root->parent->leftNode);
+    REQUIRE(!myTree->root->parent->rightNode);
+    REQUIRE(!myTree->root->leftNode->parent);
+    REQUIRE(!myTree->root->leftNode->leftNode);
+    REQUIRE(!myTree->root->leftNode->rightNode);
+    REQUIRE(!myTree->root->rightNode->parent);
+    REQUIRE(!myTree->root->rightNode->leftNode);
+    REQUIRE(!myTree->root->rightNode->rightNode);
+    delete myTree;
+}
+
+TEST_CASE("Red Black Simple Node Addition") {
+    RedBlack* myTree = new RedBlack();
+    myTree->add(10);
+    myTree->add(14);
+    REQUIRE(myTree->root->getData() == 10.0);
+    REQUIRE(myTree->root->getOccurrences() == 1);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->getColor());
+    REQUIRE(myTree->root->rightNode);
+    REQUIRE(myTree->root->leftNode);
+    REQUIRE(myTree->root->rightNode->rightNode);
+    REQUIRE(myTree->root->rightNode->leftNode);
+    REQUIRE(myTree->root->rightNode->getData() == 14.0);
+    REQUIRE(myTree->root->rightNode->getOccurrences() == 1);
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->isNull());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode->leftNode)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode)->isNull());
+    REQUIRE(myTree->root->rightNode->parent == myTree->root);
+    REQUIRE(!myTree->root->leftNode->parent);
+    REQUIRE(!myTree->root->rightNode->leftNode->parent);
+    REQUIRE(!myTree->root->rightNode->rightNode->parent);
+    REQUIRE(!myTree->root->leftNode->leftNode);
+    REQUIRE(!myTree->root->leftNode->rightNode);
+    REQUIRE(!myTree->root->rightNode->leftNode->leftNode);
+    REQUIRE(!myTree->root->rightNode->leftNode->rightNode);
+    REQUIRE(!myTree->root->rightNode->rightNode->leftNode);
+    REQUIRE(!myTree->root->rightNode->rightNode->rightNode);
+    myTree->add(14);
+    REQUIRE(myTree->root->getData() == 10.0);
+    REQUIRE(myTree->root->getOccurrences() == 1);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->getColor());
+    REQUIRE(myTree->root->rightNode);
+    REQUIRE(myTree->root->leftNode);
+    REQUIRE(myTree->root->rightNode->rightNode);
+    REQUIRE(myTree->root->rightNode->leftNode);
+    REQUIRE(myTree->root->rightNode->getData() == 14.0);
+    REQUIRE(myTree->root->rightNode->getOccurrences() == 2);
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->isNull());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode->leftNode)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode)->isNull());
+    REQUIRE(myTree->root->rightNode->parent == myTree->root);
+    REQUIRE(!myTree->root->leftNode->parent);
+    REQUIRE(!myTree->root->rightNode->leftNode->parent);
+    REQUIRE(!myTree->root->rightNode->rightNode->parent);
+    REQUIRE(!myTree->root->leftNode->leftNode);
+    REQUIRE(!myTree->root->leftNode->rightNode);
+    REQUIRE(!myTree->root->rightNode->leftNode->leftNode);
+    REQUIRE(!myTree->root->rightNode->leftNode->rightNode);
+    REQUIRE(!myTree->root->rightNode->rightNode->leftNode);
+    REQUIRE(!myTree->root->rightNode->rightNode->rightNode);
+    myTree->add(5);
+    REQUIRE(myTree->root->getData() == 10.0);
+    REQUIRE(myTree->root->getOccurrences() == 1);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->getColor());
+    REQUIRE(myTree->root->rightNode);
+    REQUIRE(myTree->root->leftNode);
+    REQUIRE(myTree->root->rightNode->rightNode);
+    REQUIRE(myTree->root->rightNode->leftNode);
+    REQUIRE(myTree->root->leftNode->leftNode);
+    REQUIRE(myTree->root->leftNode->rightNode);
+    REQUIRE(myTree->root->rightNode->getData() == 14.0);
+    REQUIRE(myTree->root->rightNode->getOccurrences() == 2);
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->getColor());
+    REQUIRE(myTree->root->leftNode->getData() == 5.0);
+    REQUIRE(myTree->root->leftNode->getOccurrences() == 1);
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode)->isNull());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode->leftNode)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode->rightNode)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode->leftNode)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode)->isNull());
+    REQUIRE(myTree->root->rightNode->parent == myTree->root);
+    REQUIRE(myTree->root->leftNode->parent == myTree->root);
+    REQUIRE(!myTree->root->leftNode->leftNode->parent);
+    REQUIRE(!myTree->root->leftNode->rightNode->parent);
+    REQUIRE(!myTree->root->rightNode->leftNode->parent);
+    REQUIRE(!myTree->root->rightNode->rightNode->parent);
+    REQUIRE(!myTree->root->leftNode->leftNode->leftNode);
+    REQUIRE(!myTree->root->leftNode->leftNode->rightNode);
+    REQUIRE(!myTree->root->leftNode->rightNode->leftNode);
+    REQUIRE(!myTree->root->leftNode->rightNode->rightNode);
+    REQUIRE(!myTree->root->rightNode->leftNode->leftNode);
+    REQUIRE(!myTree->root->rightNode->leftNode->rightNode);
+    REQUIRE(!myTree->root->rightNode->rightNode->leftNode);
+    REQUIRE(!myTree->root->rightNode->rightNode->rightNode);
+    delete myTree;
+}
+
+TEST_CASE("Red Black Addition w/ Red Parent and Uncle") {
+    RedBlack* myTree = new RedBlack();
+    myTree->add(10);
+    myTree->add(14);
+    myTree->add(5);
+    myTree->add(20);
+    std::vector<double> array = { 10, 5, 0, 0, 14, 0, 20, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->leftNode)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode->rightNode)->getColor());
+    delete myTree;
+    myTree = new RedBlack();
+    myTree->add(10);
+    myTree->add(14);
+    myTree->add(5);
+    myTree->add(13);
+    array = { 10, 5, 0, 0, 14, 13, 0, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->leftNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->leftNode->rightNode)->getColor());
+    delete myTree;
+    myTree = new RedBlack();
+    myTree->add(10);
+    myTree->add(14);
+    myTree->add(5);
+    myTree->add(1);
+    array = { 10, 5, 1, 0, 0, 0, 14, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->leftNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->leftNode->rightNode)->getColor());
+    delete myTree;
+    myTree = new RedBlack();
+    myTree->add(10);
+    myTree->add(14);
+    myTree->add(5);
+    myTree->add(7);
+    array = { 10, 5, 0, 7, 0, 0, 14, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->rightNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->rightNode->rightNode)->getColor());
+    delete myTree;
+}
+
+TEST_CASE("Red Black Addition w/ Red Parent and Black Uncle") {
+    RedBlack* myTree = new RedBlack();
+    myTree->add(10);
+    myTree->add(5);
+    myTree->add(2);
+    std::vector<double> array = { 5, 2, 0, 0, 10, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->rightNode)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode)->getColor());
+    delete myTree;
+    myTree = new RedBlack();
+    myTree->add(10);
+    myTree->add(5);
+    myTree->add(7);
+    array = { 7, 5, 0, 0, 10, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->rightNode)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode)->getColor());
+    delete myTree;
+    myTree = new RedBlack();
+    myTree->add(10);
+    myTree->add(14);
+    myTree->add(13);
+    array = { 13, 10, 0, 0, 14, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->rightNode)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode)->getColor());
+    delete myTree;
+    myTree = new RedBlack();
+    myTree->add(10);
+    myTree->add(14);
+    myTree->add(15);
+    array = { 14, 10, 0, 0, 15, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode->rightNode)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->leftNode)->getColor());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode)->getColor());
     delete myTree;
 }

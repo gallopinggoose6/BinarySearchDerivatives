@@ -30,6 +30,9 @@
     <ClInclude Include="Tree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RedBlack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AVL-Tree.cpp">
@@ -39,6 +42,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BinaryTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RedBlack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

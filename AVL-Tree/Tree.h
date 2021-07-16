@@ -6,6 +6,8 @@ class Node {
 private:
 	unsigned int occurrences = 1;
 	double data;
+protected:
+	bool valid = true;
 public:
 	Node* leftNode = nullptr, * rightNode = nullptr, * parent = nullptr;
 	Node(double d);
@@ -14,6 +16,7 @@ public:
 	void addOccurrence();		//Figure out how to make these private
 	void removeOccurence();
 	void setData(double d);
+	bool isValid() { return valid; }
 };
 
 class Tree {
@@ -22,13 +25,19 @@ private:
 	std::vector<double> GUIiot;
 	std::vector<double> GUIpoot;
 
-	//void findBalance(AVLNode* current);
 	void preOrderTraversaler(Node* currentNode);
 	void inOrderTraversaler(Node* currentNode);
 	void postOrderTraversaler(Node* currentNode);
-	//levelOrderTraversaler
+	//levelOrderTraversaler should go here
+
 	virtual void adder(double d, Node* current);
 	Node* finder(double d, Node* current);
+
+	void deleteTree(Node* current);
+
+protected:
+	void leftRotate(Node* currentNode);
+	void rightRotate(Node* currentNode);
 
 public:
 	Node* root = nullptr;
@@ -49,5 +58,5 @@ public:
 
 	//levelOrderTraversal
 
-	void remove(double d);
+	virtual void remove(double d);
 };

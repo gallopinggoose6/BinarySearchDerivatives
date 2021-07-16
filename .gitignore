@@ -2,3 +2,5 @@
 *.aps
 AVL-Tree/x64/
 x64/
+*Debug/
+*Release/

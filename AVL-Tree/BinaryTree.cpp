@@ -55,8 +55,16 @@ void Tree::adder(double d, Node* current) {
 	}
 }
 
+void Tree::deleteTree(Node* current) {
+	if (current) {
+		if (current->rightNode) deleteTree(current->rightNode);
+		if (current->leftNode) deleteTree(current->leftNode);
+		delete current;
+	}
+}
+
 Tree::~Tree() {
-	while (root != nullptr) remove(root->getData());	//very inefficient. Replace later
+	deleteTree(root);
 }
 
 Node* Tree::finder(double d, Node* current) {
@@ -66,26 +74,29 @@ Node* Tree::finder(double d, Node* current) {
 	}
 	else if (d > current->getData()) {
 		if (current->rightNode != nullptr) {
-			if (current->rightNode->getData() == d) {
-				return current->rightNode;
-			}
-			else {
-				return finder(d, current->rightNode);
+			if (current->rightNode->isValid()) {
+				if (current->rightNode->getData() == d) {
+					return current->rightNode;
+				}
+				else {
+					return finder(d, current->rightNode);
+				}
 			}
 		}
-		else return nullptr;
 	}
 	else {
 		if (current->leftNode != nullptr) {
-			if (current->leftNode->getData() == d) {
-				return current->leftNode;
-			}
-			else {
-				return finder(d, current->leftNode);
+			if (current->leftNode->isValid()) {
+				if (current->leftNode->getData() == d) {
+					return current->leftNode;
+				}
+				else {
+					return finder(d, current->leftNode);
+				}
 			}
 		}
-		else return nullptr;
 	}
+	return nullptr;
 }
 
 std::vector<double> Tree::preOrderTraversal() {
@@ -181,4 +192,26 @@ void Tree::remove(double d) {
 			}
 		}
 	}
+}
+
+void Tree::leftRotate(Node* star) {
+	if (star == root) root = star->rightNode;
+	Node* temp = star->rightNode->leftNode;
+	star->rightNode->leftNode = star;
+	star->parent->leftNode = star->rightNode;
+	star->rightNode->parent = star->parent;
+	star->parent = star->rightNode;
+	star->rightNode = temp;
+	if (star->rightNode != nullptr) star->rightNode->parent = star;
+}
+
+void Tree::rightRotate(Node* star) {
+	if (star == root) root = star->leftNode;
+	Node* temp = star->leftNode->rightNode;
+	star->leftNode->rightNode = star;
+	star->parent->rightNode = star->leftNode;
+	star->leftNode->parent = star->parent;
+	star->parent = star->leftNode;
+	star->leftNode = temp;
+	if (star->leftNode != nullptr) star->leftNode->parent = star;
 }

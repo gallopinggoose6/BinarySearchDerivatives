@@ -39,8 +39,6 @@ void AVL::findBalance(AVLNode* current) {
 	}
 }
 
-//levelOrderTraversaler
-
 void AVL::adder(double d, Node* current) {
 	if (root == nullptr) {
 		root = new AVLNode(d);
@@ -71,23 +69,11 @@ void AVL::adder(double d, Node* current) {
 void AVL::addBalance(AVLNode *star) {
 	if (DEBUG_TRACE) std::cout << "addBalance(star: " << star->getData() << " )\n";
 	if (static_cast<AVLNode*>(star->parent)->getBalfactor() == 2 && star->getBalfactor() == -1) {
-		AVLNode* temp = static_cast<AVLNode*>(star->leftNode->rightNode);
-		star->leftNode->rightNode = star;
-		star->parent->rightNode = star->leftNode;
-		star->leftNode->parent = star->parent;
-		star->parent = star->leftNode;
-		star->leftNode = temp;
-		if (star->leftNode != nullptr) star->leftNode->parent = star;
+		rightRotate(star);
 		findBalance(static_cast<AVLNode*> (root));
 	}
 	else if (static_cast<AVLNode*>(star->parent)->getBalfactor() == -2 && star->getBalfactor() == 1) {
-		AVLNode* temp = static_cast<AVLNode*>(star->rightNode->leftNode);
-		star->rightNode->leftNode = star;
-		star->parent->leftNode = star->rightNode;
-		star->rightNode->parent = star->parent;
-		star->parent = star->rightNode;
-		star->rightNode = temp;
-		if (star->rightNode != nullptr) star->rightNode->parent = star;
+		leftRotate(star);
 		findBalance(static_cast <AVLNode*> (root));
 	}
 	else if (static_cast<AVLNode*>(star->parent)->getBalfactor() == 2 && star->getBalfactor() >= 1) {
