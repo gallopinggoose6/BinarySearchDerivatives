@@ -30,9 +30,12 @@ void RedBlack::adder(double d, Node* current)
 			else adder(d, current->leftNode);
 		}
 	}
+	rebalance(current);
+}
 
+void RedBlack::rebalance(Node* current) {
 	//Balance Adapted from CU's Visualizing Data Structures: Copyright © 2015 by Rhonda Hoenigman
-	while ((current != root) and (static_cast<RedBlackNode*> (current->parent)->getColor())) {
+	while ((current != root) && (current->parent != root) && static_cast<RedBlackNode*> (current->parent)->getColor()) {
 		if (current->parent == current->parent->parent->leftNode) {
 			RedBlackNode* uncle = static_cast<RedBlackNode*> (current->parent->parent->rightNode);
 			if (uncle->getColor()) {
@@ -63,16 +66,17 @@ void RedBlack::adder(double d, Node* current)
 				C3Right(static_cast<RedBlackNode*>(current));
 			}
 		}
-		static_cast<RedBlackNode*>(root)->setColor(false);
 	}
+	if(root) static_cast<RedBlackNode*>(root)->setColor(false);
 }
 
-void RedBlack::remove(double d)
+void RedBlack::remover(double d, bool shouldReballance)
 {
 	if (root != nullptr) {
-		Node* foundNode = find(d);
-		Node* balanceNode;
+		RedBlackNode* foundNode = static_cast<RedBlackNode*>(find(d));
+		RedBlackNode* balanceNode = nullptr;
 		if (foundNode != nullptr) {
+			bool nodeColor = foundNode->getColor();
 			if (foundNode->getOccurrences() > 1) foundNode->removeOccurence();
 			else {
 				int leafs = 0;
@@ -80,25 +84,23 @@ void RedBlack::remove(double d)
 					if (!static_cast<RedBlackNode*>(foundNode->leftNode)->isNull()) ++leafs;
 				}
 				if (foundNode->rightNode != nullptr) {
-					if (!static_cast<RedBlackNode*>(foundNode->leftNode)->isNull()) ++leafs;
+					if (!static_cast<RedBlackNode*>(foundNode->rightNode)->isNull()) ++leafs;
 				}
 				switch (leafs) {
 				case 0:
 					if (root->getData() != d) {
+						balanceNode = static_cast<RedBlackNode*>(foundNode->leftNode);
+						if (foundNode->leftNode) foundNode->leftNode->parent = foundNode->parent;
 						if (foundNode->parent->leftNode != nullptr) {
-							if (foundNode->parent->leftNode == foundNode) foundNode->parent->leftNode = nullptr;
-							else {
-								foundNode->parent->rightNode = nullptr;
-							}
+							if (foundNode->parent->leftNode == foundNode) foundNode->parent->leftNode = foundNode->leftNode;
+							else foundNode->parent->rightNode = foundNode->leftNode;
 						}
-						else {
-							foundNode->parent->rightNode = nullptr;
-						}
+						else foundNode->parent->rightNode = foundNode->leftNode;
 					}
 					else {
 						root = nullptr;
+						delete foundNode->leftNode;
 					}
-					delete foundNode->leftNode;
 					delete foundNode->rightNode;
 					delete foundNode;
 					foundNode = nullptr;
@@ -108,24 +110,28 @@ void RedBlack::remove(double d)
 					if (root->getData() == d) {
 						if (!static_cast<RedBlackNode*>(root->leftNode)->isNull()) {
 							delete root->rightNode;
+							balanceNode = static_cast<RedBlackNode*>(foundNode->leftNode);
 							root = root->leftNode;
-							root->parent = nullptr;
+							root->parent = foundNode->parent;
 						}
 						else {
 							delete root->leftNode;
+							balanceNode = static_cast<RedBlackNode*>(foundNode->rightNode);
 							root = root->rightNode;
-							root->parent = nullptr;
+							root->parent = foundNode->parent;
 						}
 					}
 					else if (!static_cast<RedBlackNode*>(foundNode->leftNode)->isNull()) {
 						delete foundNode->rightNode;
-						foundNode->leftNode->parent = foundNode->parent;
+						balanceNode = static_cast<RedBlackNode*>(foundNode->leftNode);
+						if(foundNode->leftNode) foundNode->leftNode->parent = foundNode->parent;
 						if (foundNode->parent->leftNode->getData() == d) foundNode->parent->leftNode = foundNode->leftNode;
 						else foundNode->parent->rightNode = foundNode->leftNode;
 					}
 					else {
 						delete foundNode->leftNode;
-						foundNode->rightNode->parent = foundNode->parent;
+						balanceNode = static_cast<RedBlackNode*>(foundNode->rightNode);
+						if(foundNode->rightNode) foundNode->rightNode->parent = foundNode->parent;
 						if (foundNode->parent->leftNode->getData() == d) foundNode->parent->leftNode = foundNode->rightNode;
 						else foundNode->parent->rightNode = foundNode->rightNode;
 					}
@@ -136,9 +142,9 @@ void RedBlack::remove(double d)
 				case 2:
 					std::vector<double> traversal = inOrderTraversal();
 					Node* foundNodeoriginal = foundNode;
-					for (unsigned int index = 0; index < traversal.size(); ++index) {
+					for (size_t index = 0; index < traversal.size(); ++index) {
 						if (traversal[index] == d) {
-							foundNode = find(traversal[index + 1]);	//not the most efficient, but works. Could be improved later
+							foundNode = static_cast<RedBlackNode*>(find(traversal[index + 1]));	//not the most efficient, but works. Could be improved later
 							break;
 						}
 					}
@@ -147,12 +153,14 @@ void RedBlack::remove(double d)
 						foundNode->removeOccurence();
 					}
 					double temp = foundNode->getData();
-					remove(foundNode->getData());
+					if (static_cast<RedBlackNode*>(foundNode->rightNode)->isNull()) balanceNode = static_cast<RedBlackNode*>(foundNode->leftNode);
+					else balanceNode = static_cast<RedBlackNode*>(foundNode->rightNode);
+					remover(foundNode->getData(), false);
 					foundNodeoriginal->setData(temp);
 					break;
 				}
 			}
-			//Rebalance tree
+			if(shouldReballance) rebalance(balanceNode);
 
 		}
 	}

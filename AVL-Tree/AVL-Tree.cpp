@@ -951,3 +951,120 @@ TEST_CASE("Red Black Addition w/ Red Parent and Black Uncle") {
     REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode->rightNode)->getColor());
     delete myTree;
 }
+
+TEST_CASE("Red Black No Children Deletion") {
+    RedBlack* myTree = new RedBlack();
+    myTree->add(1);
+    myTree->remove(1);
+    REQUIRE(!myTree->root);
+    myTree->add(1);
+    REQUIRE(myTree->root);
+    REQUIRE(myTree->root->getData() == 1);
+    REQUIRE(myTree->root->leftNode);
+    REQUIRE(myTree->root->rightNode);
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->isNull());
+    myTree->add(2);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->rightNode)->isNull());
+    REQUIRE(myTree->root->rightNode->getData() == 2);
+    myTree->remove(2);
+    REQUIRE(myTree->root->getData() == 1);
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->isNull());
+    myTree->add(2);
+    myTree->add(0);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode)->isNull());
+    REQUIRE(myTree->root->leftNode->getData() == 0);
+    REQUIRE(myTree->root->rightNode->getData() == 2);
+    REQUIRE(myTree->root->leftNode->leftNode);
+    REQUIRE(myTree->root->leftNode->rightNode);
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode->leftNode)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode->rightNode)->isNull());
+    myTree->remove(0);
+    REQUIRE(myTree->root->leftNode);
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->isNull());
+    REQUIRE(myTree->root->getData() == 1);
+    REQUIRE(myTree->root->rightNode->getData() == 2);
+    delete myTree;
+}
+
+TEST_CASE("Red Black 1 Child Deletion") {
+    RedBlack* myTree = new RedBlack();
+    myTree->add(1);
+    myTree->add(2);
+    myTree->remove(1);
+    REQUIRE(myTree->root);
+    REQUIRE(myTree->root->parent);
+    REQUIRE(myTree->root->getData() == 2);
+    REQUIRE(myTree->root->leftNode);
+    REQUIRE(myTree->root->rightNode);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->isNull());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->getColor());
+    myTree->add(1);
+    myTree->remove(2);
+    REQUIRE(myTree->root);
+    REQUIRE(myTree->root->parent);
+    REQUIRE(myTree->root->getData() == 1);
+    REQUIRE(myTree->root->leftNode);
+    REQUIRE(myTree->root->rightNode);
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->isNull());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->isNull());
+    myTree->add(2);
+    myTree->add(3);
+    std::vector<double> array = { 2, 1, 0, 0, 3, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);          // sanity check
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->leftNode)->getColor());
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->getColor());
+    myTree->add(4);
+    array = { 2, 1, 0, 0, 3, 0, 4, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    myTree->add(-1);
+    array = { 2, 1, -1, 0, 0, 0, 3, 0, 4, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    myTree->remove(1);
+    array = { 2, -1, 0, 0, 3, 0, 4, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    myTree->remove(3);
+    array = { 2, -1, 0, 0, 4, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    myTree->add(1);
+    array = { 2, -1, 0, 1, 0, 0, 4, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    myTree->add(3);
+    array = { 2, -1, 0, 1, 0, 0, 4, 3, 0, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    myTree->remove(-1);
+    array = { 2, 1, 0, 0, 4, 3, 0, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    myTree->remove(4);
+    array = { 2, 1, 0, 0, 3, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    delete myTree;
+}
+
+TEST_CASE("Red Black 2 Child Deletion") {
+    RedBlack* myTree = new RedBlack();
+    myTree->add(2);
+    myTree->add(1);
+    myTree->add(3);
+    myTree->remove(2);
+    REQUIRE(myTree->root->getData() == 3);
+    REQUIRE(static_cast<RedBlackNode*>(myTree->root->rightNode)->isNull());
+    REQUIRE(!static_cast<RedBlackNode*>(myTree->root->leftNode)->isNull());
+    REQUIRE(myTree->root->leftNode->getData() == 1);
+    myTree->add(5);
+    myTree->add(-1);
+    myTree->add(2);
+    myTree->add(4);
+    myTree->add(6);
+    myTree->add(2.5);
+    std::vector<double> array = { 3, 1, -1, 0, 0, 2, 0, 2.5, 0, 0, 5, 4, 0, 0, 6, 0, 0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+    myTree->remove(1);
+    array = { 2.5, 2.0, -1.0, 0.0, 0.0, 0.0, 3.0, 0.0, 5.0, 4.0, 0.0, 0.0, 6.0, 0.0, 0.0 };
+    REQUIRE(myTree->preOrderTraversal() == array);
+}

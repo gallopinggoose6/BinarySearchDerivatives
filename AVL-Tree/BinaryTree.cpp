@@ -21,9 +21,9 @@ void Tree::preOrderTraversaler(Node* currentNode) {
 }
 
 void Tree::inOrderTraversaler(Node* currentNode) {
-	if (currentNode->leftNode != nullptr) inOrderTraversaler(currentNode->leftNode);
+	if (currentNode->leftNode != nullptr) if (currentNode->leftNode->isValid()) inOrderTraversaler(currentNode->leftNode);
 	GUIiot.push_back(currentNode->getData());
-	if (currentNode->rightNode != nullptr) inOrderTraversaler(currentNode->rightNode);
+	if (currentNode->rightNode != nullptr) if (currentNode->rightNode->isValid()) inOrderTraversaler(currentNode->rightNode);
 }
 
 void Tree::postOrderTraversaler(Node* currentNode) {
@@ -198,7 +198,8 @@ void Tree::leftRotate(Node* star) {
 	if (star == root) root = star->rightNode;
 	Node* temp = star->rightNode->leftNode;
 	star->rightNode->leftNode = star;
-	star->parent->leftNode = star->rightNode;
+	if (star->parent->leftNode == star)	star->parent->leftNode = star->rightNode;
+	else star->parent->rightNode = star->rightNode;
 	star->rightNode->parent = star->parent;
 	star->parent = star->rightNode;
 	star->rightNode = temp;
@@ -209,7 +210,8 @@ void Tree::rightRotate(Node* star) {
 	if (star == root) root = star->leftNode;
 	Node* temp = star->leftNode->rightNode;
 	star->leftNode->rightNode = star;
-	star->parent->rightNode = star->leftNode;
+	if (star->parent->leftNode == star) star->parent->leftNode = star->leftNode;
+	else star->parent->rightNode = star->leftNode;
 	star->leftNode->parent = star->parent;
 	star->parent = star->leftNode;
 	star->leftNode = temp;

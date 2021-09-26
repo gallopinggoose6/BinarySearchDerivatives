@@ -29,10 +29,15 @@ public:
 
 class RedBlack : public Tree
 {
+public:
+	virtual void remove(double d) override {
+		remover(d, true);
+	}
 private:
+	void remover(double d, bool balance = true);
 	virtual void adder(double d, Node* current) override;
-	virtual void remove(double d) override;
 	void C1(RedBlackNode* star, RedBlackNode* uncle);
 	void C3Left(RedBlackNode* star);
 	void C3Right(RedBlackNode* star);
+	void rebalance(Node* star);
 };

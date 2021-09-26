@@ -22,11 +22,9 @@ public:
 class Tree {
 private:
 	std::vector<double> GUIpot;
-	std::vector<double> GUIiot;
 	std::vector<double> GUIpoot;
 
 	void preOrderTraversaler(Node* currentNode);
-	void inOrderTraversaler(Node* currentNode);
 	void postOrderTraversaler(Node* currentNode);
 	//levelOrderTraversaler should go here
 
@@ -38,7 +36,8 @@ private:
 protected:
 	void leftRotate(Node* currentNode);
 	void rightRotate(Node* currentNode);
-
+	void inOrderTraversaler(Node* currentNode);
+	std::vector<double> GUIiot;
 public:
 	Node* root = nullptr;
 	
